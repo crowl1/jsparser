@@ -31,6 +31,39 @@ class Films_Members(db.Model):
 
 engine = create_engine(f'postgresql+psycopg2://postgres:{db_password}@localhost/first')
 
-db.create_all()
-db.session.commit()
-engine.connect()
+
+def create_table():
+    db.create_all()
+    db.session.commit()
+    engine.connect()
+    print('tables created successfully')
+
+
+if __name__ == "__main__":
+    create_table()
+
+
+def filling_table(data_film):
+
+    for data in data_film:
+
+        film = Films(title = data['title'], year = data['year'])
+        db.session.add(film)
+
+        db.session.flush()
+
+        for item in data['members']:
+
+            member_list = Members.query.filter_by(name = item).all()
+            
+            if len(member_list) == 0:
+                member = Members(name = item.strip())
+                db.session.add(member)
+                db.session.flush()
+
+
+            db.session.add(Films_Members(id_film = film.id, id_member = member.id or member_list[0].id))
+
+        db.session.commit()
+
+    print('tables are successfully filled')
