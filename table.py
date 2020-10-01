@@ -54,15 +54,19 @@ def filling_table(data_film):
 
         for item in data['members']:
 
-            member_list = Members.query.filter_by(name = item).all()
+            member_list = Members.query.filter_by(name = item.strip()).all()
             
             if len(member_list) == 0:
                 member = Members(name = item.strip())
                 db.session.add(member)
                 db.session.flush()
+                member_id = member.id
+            else:
+                member_id = member_list[0].id
+                if (member_list[0].name == 'Robert De Niro'):
+                    print('V')
 
-
-            db.session.add(Films_Members(id_film = film.id, id_member = member.id or member_list[0].id))
+            db.session.add(Films_Members(id_film = film.id, id_member = member_id ))
 
         db.session.commit()
 
